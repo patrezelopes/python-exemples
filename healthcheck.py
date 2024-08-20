@@ -1,3 +1,28 @@
+"""
+settings.py
+MIDDLEWARE = [
+    "mezapro.healthcheck.HealthCheckMiddleware",
+]
+
+views.py
+from mezapro.healthcheck import HealthCheckMiddleware
+class Status(ViewSet):
+    authentication_classes = []
+
+    def get(self, request):
+        check = HealthCheckMiddleware(request)
+        return Response(
+            dict(
+                healthz=check.healthz(request).content,
+                readiness=check.readiness(request).content,
+            ),
+            headers=hardening_header(),
+        )
+urls.py
+path("status", Status.as_view({"get": "get"}), name="status")
+
+"""
+
 import logging
 
 from django.http import HttpResponse, HttpResponseServerError
